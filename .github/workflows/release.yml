@@ -1,0 +1,45 @@
+# Publishes a GitHub Release when a v* tag is pushed. GoReleaser builds the
+# binaries for every platform in .goreleaser.yaml, attaches the archives and
+# checksums, and writes the release notes.
+#
+# To make a release:
+#   git tag -a v1.0.0 -m "first release"
+#   git push origin v1.0.0
+#
+# The tag is what triggers this. Do not move a published tag: the release is
+# already attached to it, and force-pushing a tag leaves the two out of step.
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+# Required to create the release. contents: write is all GoReleaser needs, and
+# the job is not granted anything else.
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Tags and full history: GoReleaser reads the tag to name the release
+          # and the commit range to build the changelog.
+          fetch-depth: 0
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: build and publish
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          distribution: goreleaser
+          args: release --clean
+        env:
+          # The automatic token for this repository. No PAT or secret to
+          # configure, and it is scoped to this one job.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

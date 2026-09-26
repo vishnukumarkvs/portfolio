@@ -9,8 +9,10 @@ resources:
   - ingress.yaml
   - networkpolicy.yaml
 
-commonLabels:
-  app.kubernetes.io/part-of: portfolio
+labels:
+  - includeSelectors: false
+    pairs:
+      app.kubernetes.io/part-of: portfolio
 
 images:
   - name: ghcr.io/vishnukumarkvs/portfolio

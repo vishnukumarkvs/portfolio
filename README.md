@@ -68,6 +68,59 @@ python3 -m http.server 8080
 The Go server is a convenience, not a dependency. It exists so there is one
 binary to run in Docker and in Kubernetes.
 
+## Releases
+
+Releases are built by GoReleaser and published by GitHub Actions. To cut one:
+
+```sh
+git tag -a v1.0.0 -m "first release"
+git push origin v1.0.0
+```
+
+Pushing a `v*` tag is the only trigger. The workflow builds the six targets in
+`.goreleaser.yaml` (linux, darwin and windows, on amd64 and arm64), attaches the
+archives and `checksums.txt`, and writes the release notes from the commits
+since the previous tag.
+
+| File | What it does |
+| --- | --- |
+| `.goreleaser.yaml` | Targets, archive naming, checksums, release notes |
+| `.github/workflows/release.yml` | Runs on a `v*` tag. Publishes the release |
+| `.github/workflows/ci.yml` | Runs on every push and PR. Publishes nothing |
+
+GoReleaser uses the automatic `GITHUB_TOKEN`, scoped to `contents: write` for
+that one job. There is no PAT to configure and no secret to store. The CI
+workflow is read-only.
+
+Two deliberate choices worth knowing about:
+
+- **No `-version` flag.** The binary has no flags at all, by design. Instead
+  `-buildvcs` stamps Go's own build info, so `go version -m ./portfolio` shows
+  the commit, tag and dirty state a binary came from.
+- **No published container image.** `k8s/` references
+  `ghcr.io/vishnukumarkvs/portfolio:latest`, but nothing pushes it yet. The
+  Dockerfile is ready; a `docker` block in `.goreleaser.yaml` plus
+  `packages: write` would close that gap.
+
+Both are free for a public repository: GitHub Actions and GitHub Releases have
+no cost, the included monthly minutes do not apply to public repos, and
+GoReleaser's open-source version is Apache-2.0. GoReleaser Pro is a paid
+product and is not used here.
+
+To check the config or do a full build without publishing:
+
+```sh
+goreleaser check
+goreleaser release --snapshot --clean    # writes dist/, creates no release
+```
+
+## Licence
+
+There is no `LICENSE` file yet, which leaves the repository technically
+all-rights-reserved. Add one before treating a release as something anyone else
+may build on. GoReleaser is configured to bundle it into each archive once it
+exists; the line is already there, commented out.
+
 ## Configuration
 
 There are no flags and no config file. Two environment variables, both optional:
@@ -133,8 +186,11 @@ Before applying, check two things in `k8s/`:
 
 What the manifests set, and why:
 
-- Two replicas, `maxUnavailable: 0`. There is no state and no database, so
-  availability is entirely about not having both replicas on one node.
+- One replica, `maxSurge: 1` / `maxUnavailable: 0`. There is no state and no
+  database, so a second pod would only be a second thing to patch. A rollout
+  still briefly runs two pods so it never drops a request.
+- No `topologySpreadConstraints` and no pod anti-affinity. Both exist to keep
+  replicas off the same node, which is meaningless at a replica count of one.
 - `readOnlyRootFilesystem`, all capabilities dropped, `runAsNonRoot` at 65532,
   no service account token. The distroless base has no shell to exec into.
 - `startupProbe` with a generous budget so a slow node does not get the
@@ -145,8 +201,8 @@ What the manifests set, and why:
 - `terminationGracePeriodSeconds: 30` so in-flight requests drain and
   kube-proxy withdraws the endpoint before the process exits.
 
-There is no HPA. A static site serving kilobytes does not need autoscaling, and
-two replicas plus a rolling update is the entire availability story.
+There is no HPA either. A static site serving kilobytes does not benefit from
+autoscaling, and one replica is the entire availability story.
 
 ## Notes
 

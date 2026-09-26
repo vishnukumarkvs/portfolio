@@ -1,0 +1,85 @@
+# GoReleaser builds a release archive per platform from a tag and publishes it
+# as a GitHub Release. Run through .github/workflows/release.yml, not by hand.
+#
+#   goreleaser check                 validate this file
+#   goreleaser release --snapshot    build everything, publish nothing
+#
+# The binary is the only artefact that matters. The site is embedded in it, so
+# an archive is just the server plus the checksums beside it: nothing to
+# install, and no runtime dependency to document.
+version: 2
+
+project_name: portfolio
+
+before:
+  hooks:
+    - go mod tidy
+    - go mod verify
+
+# One plain Go binary. CGO off makes the result static and reproducible, and
+# drops libc version differences from the equation entirely.
+builds:
+  - id: portfolio
+    main: .
+    binary: portfolio
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    flags:
+      - -trimpath
+      # Embed the commit, tag and dirty state via Go's own build info, so a
+      # binary can be traced to its source without adding a -version flag.
+      - -buildvcs=true
+    ldflags:
+      - -s -w
+    # Same tag in, same bytes out.
+    mod_timestamp: "{{ .CommitTimestamp }}"
+
+archives:
+  - id: portfolio
+    ids:
+      - portfolio
+    # zip on Windows, tar.gz everywhere else.
+    formats:
+      - tar.gz
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    files:
+      - README.md
+      # Uncomment once a LICENSE file exists. It is left out rather than
+      # guessed at; see the Licence section of the README.
+      # - LICENSE
+
+checksum:
+  name_template: "checksums.txt"
+
+# One release per tag, published immediately and marked as the latest.
+release:
+  prerelease: auto
+  mode: replace
+  header: |
+    Static site server, single binary, no runtime dependencies.
+
+    Unpack, run it, and the site is on the port. `ADDR` and `PORT` are the only
+    settings; there are no flags and no config file.
+  footer: |
+    The site is embedded in the binary, so every platform archive is a
+    complete, self-contained copy. To serve your own copy of the site, see
+    <https://github.com/vishnukumarkvs/portfolio>.
+  name_template: "{{ .ProjectName }} {{ .Version }}"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^chore:"
+      - Merge pull request
+      - Merge branch
+      - "^\\W*$"

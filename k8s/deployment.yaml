@@ -7,15 +7,17 @@ metadata:
     app.kubernetes.io/component: web
     app.kubernetes.io/part-of: portfolio
 spec:
-  # Two replicas so a node drain or a rolling update never takes the site down.
-  # There is no session state and no database, so this is the whole availability
-  # story: more than this would just be two more pods to patch.
-  replicas: 2
+  # One replica. The site is 6KB of HTML behind a static file server, so a
+  # second pod would be a second thing to patch for no gain. This is a
+  # best-effort site, not a service with an uptime target.
+  replicas: 1
   revisionHistoryLimit: 3
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      # Take the new pod up before retiring the old one.
+      # Take the new pod up before retiring the old one, so a rollout still
+      # does not drop requests. This briefly makes two pods, which is the only
+      # moment the replica count is above one.
       maxSurge: 1
       maxUnavailable: 0
   selector:
@@ -91,22 +93,4 @@ spec:
             capabilities:
               drop:
                 - ALL
-      # Spread replicas so a single node failure cannot take out both pods, but
-      # only as a preference: on a single-node cluster a hard requirement would
-      # leave the second replica permanently Pending.
-      topologySpreadConstraints:
-        - maxSkew: 1
-          topologyKey: kubernetes.io/hostname
-          whenUnsatisfiable: ScheduleAnyway
-          labelSelector:
-            matchLabels:
-              app.kubernetes.io/name: portfolio
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 100
-              podAffinityTerm:
-                topologyKey: kubernetes.io/hostname
-                labelSelector:
-                  matchLabels:
-                    app.kubernetes.io/name: portfolio
+

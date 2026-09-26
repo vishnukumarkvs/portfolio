@@ -1,0 +1,39 @@
+# Verifies every push and pull request: vet, build, and confirm the GoReleaser
+# config still produces a working set of binaries. Nothing here is published.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Read-only. This workflow has no business writing to the repository.
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # GoReleaser derives its version from tags, so it needs the history.
+          fetch-depth: 0
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: vet
+        run: go vet ./...
+
+      - name: build
+        run: go build ./...
+
+      - name: release dry run
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          distribution: goreleaser
+          # --snapshot builds every platform and writes the archives and
+          # checksums to dist/ without creating a GitHub Release.
+          args: release --snapshot --clean

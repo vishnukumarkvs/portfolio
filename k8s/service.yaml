@@ -17,5 +17,5 @@ spec:
       protocol: TCP
   # Nothing here is long-lived, so give a client that opened a connection
   # time to finish reading before the pod is pulled out from under it.
-  # sessionAffinity is left as None: any replica can serve any request.
+  # sessionAffinity stays None: there is no per-client state to pin.
   internalTrafficPolicy: Cluster
