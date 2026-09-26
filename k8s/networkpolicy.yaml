@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: NetworkPolicy
+metadata:
+  name: portfolio
+  labels:
+    app.kubernetes.io/name: portfolio
+    app.kubernetes.io/component: web
+    app.kubernetes.io/part-of: portfolio
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: portfolio
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # The site is public, so anything may reach the HTTP port. Restricting the
+    # port is still worth doing: it keeps the policy valid while refusing
+    # anything that is not the ingress controller's traffic.
+    - ports:
+        - port: 8080
+          protocol: TCP
+  egress:
+    # The server makes no outbound requests of its own, but every pod needs DNS
+    # to resolve the ingress hostname. Without this rule the site renders with no
+    # CSS, which is a confusing failure to debug.
+    - to:
+        - namespaceSelector: {}
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP

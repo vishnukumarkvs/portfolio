@@ -1,0 +1,112 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: portfolio
+  labels:
+    app.kubernetes.io/name: portfolio
+    app.kubernetes.io/component: web
+    app.kubernetes.io/part-of: portfolio
+spec:
+  # Two replicas so a node drain or a rolling update never takes the site down.
+  # There is no session state and no database, so this is the whole availability
+  # story: more than this would just be two more pods to patch.
+  replicas: 2
+  revisionHistoryLimit: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      # Take the new pod up before retiring the old one.
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: portfolio
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: portfolio
+        app.kubernetes.io/component: web
+        app.kubernetes.io/part-of: portfolio
+    spec:
+      # Long enough for the server to finish its in-flight requests on SIGTERM
+      # and for kube-proxy to withdraw the endpoint before the process exits.
+      terminationGracePeriodSeconds: 30
+      # This pod talks to nothing. No registry pulls, no API calls, no token.
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: portfolio
+          image: ghcr.io/vishnukumarkvs/portfolio:latest
+          imagePullPolicy: IfNotPresent
+          # The only setting the server has. There are no flags and no config
+          # file, so an env change is the only runtime knob that exists.
+          env:
+            - name: ADDR
+              value: ":8080"
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          # The server is memory-resident and does no I/O beyond the socket, so
+          # the limits are a guardrail against a runaway rather than a real
+          # requirement. The 128Mi ceiling is roughly 4x the embedded site size.
+          resources:
+            requests:
+              cpu: 20m
+              memory: 32Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            # A static server is listening within milliseconds of start. This
+            # generous budget is here to absorb a slow node, not a slow boot.
+            periodSeconds: 2
+            failureThreshold: 15
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 15
+            timeoutSeconds: 2
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: http
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 2
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+      # Spread replicas so a single node failure cannot take out both pods, but
+      # only as a preference: on a single-node cluster a hard requirement would
+      # leave the second replica permanently Pending.
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: portfolio
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                topologyKey: kubernetes.io/hostname
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: portfolio

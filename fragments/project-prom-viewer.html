@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>prom-viewer — Vishnu Kumar</title>
+  <meta name="description" content="A read-only web UI and CLI for inspecting a running Prometheus instance.">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="../assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../assets/fonts/instrument-sans.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../assets/style.css">
+  <script>
+    try {
+      var t = localStorage.getItem('theme');
+      if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', t);
+    } catch (e) {}
+  </script>
+</head>
+<body>
+  <main class="page">
+    <a class="back" href="../index.html#projects">&#8592; Projects</a>
+
+    <h1 class="page-title">prom-viewer</h1>
+    <p class="page-lede">A read-only web UI and CLI for inspecting a running Prometheus instance.</p>
+
+    <article class="detail">
+      <p>
+        It talks to Prometheus purely over its HTTP APIs. It never opens the
+        TSDB directory, never writes to Prometheus, and needs no separate
+        database, so pointing it at production is safe.
+      </p>
+
+      <ul>
+        <li><strong>TSDB head</strong> &mdash; series, chunks, label pairs, time range and block counts.</li>
+        <li><strong>WAL status</strong> &mdash; storage size and current segment, with replay progress while Prometheus is recovering.</li>
+        <li><strong>Cardinality</strong> &mdash; top metric names, searchable, with per-label distinct-value counts for any one metric.</li>
+        <li><strong>Recording rules</strong> &mdash; filterable rule groups with evaluation timing, health and source file.</li>
+        <li><strong>Resource trends</strong> &mdash; one-hour CPU, memory and head-series graphs, queried from Prometheus itself.</li>
+      </ul>
+
+      <p>
+        Templates, CSS and a vendored copy of htmx are compiled into the binary
+        with <code>embed.FS</code>, so deploying means copying one file. The
+        PromQL expressions are fixed and read-only; there is no endpoint for
+        entering arbitrary queries, which keeps the footgun surface small.
+      </p>
+
+      <p class="detail-actions">
+        <a href="https://github.com/vishnukumarkvs/prom-viewer">Source</a>
+        <a href="../index.html#projects" data-close-project="prom-viewer">Close</a>
+      </p>
+    </article>
+  </main>
+</body>
+</html>

@@ -1,0 +1,45 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: portfolio
+  labels:
+    app.kubernetes.io/name: portfolio
+    app.kubernetes.io/component: web
+    app.kubernetes.io/part-of: portfolio
+  annotations:
+    # Let the certificate be renewed and reloaded without restarting the ingress
+    # controller. Drop this pair if cert-manager is not managing this cluster.
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  # Traefik is the default ingress controller on k3s. Change this to nginx, or
+  # whatever the cluster actually runs, before applying.
+  ingressClassName: traefik
+  tls:
+    - hosts:
+        - vishnukvs.xyz
+        - www.vishnukvs.xyz
+      # Must exist first: cert-manager creates it from the annotation above.
+      # Without the secret the Ingress stays in a pending state and serves
+      # nothing, so check `kubectl get ingress portfolio` after applying.
+      secretName: portfolio-tls
+  rules:
+    - host: vishnukvs.xyz
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: portfolio
+                port:
+                  name: http
+    - host: www.vishnukvs.xyz
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: portfolio
+                port:
+                  name: http

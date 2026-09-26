@@ -1,0 +1,18 @@
+# Keep the build context to what the image actually needs. The compiled server
+# is a few megabytes; copying a .git directory or a local k3s kubeconfig into the
+# context would slow every build down for no reason.
+.git
+.gitignore
+.github
+.git*
+
+k8s/
+*.md
+LICENSE
+Dockerfile
+.dockerignore
+Makefile
+
+# Never let a stray local build artifact end up in the image.
+portfolio
+/dist/

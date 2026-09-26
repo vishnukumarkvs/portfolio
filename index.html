@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kavali Vignesh Sai Vishnu Kumar</title>
+  <meta name="description" content="Site Reliability Engineer. I run observability and high-scale systems, and write about Go and eBPF.">
+  <meta name="author" content="Kavali Vignesh Sai Vishnu Kumar">
+  <meta name="color-scheme" content="light dark">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Kavali Vignesh Sai Vishnu Kumar">
+  <meta property="og:description" content="Site Reliability Engineer. I run observability and high-scale systems, and write about Go and eBPF.">
+  <meta property="og:url" content="https://vishnukvs.xyz/">
+
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/instrument-sans.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="assets/style.css">
+
+  <script>
+    // Runs before first paint so the page never flashes the wrong theme.
+    try {
+      var t = localStorage.getItem('theme');
+      if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', t);
+    } catch (e) {}
+  </script>
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="topbar-name" href="#top">Vishnu Kumar</a>
+      <nav class="topbar-nav">
+        <a href="#work">Work</a>
+        <a href="#projects">Projects</a>
+        <a href="#stack">Stack</a>
+        <button class="theme-toggle" type="button" aria-label="Switch colour theme">
+          <span class="on-dark" aria-hidden="true">Dark</span>
+          <span class="on-light" aria-hidden="true">Light</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+
+    <section class="hero">
+      <h1>Kavali Vignesh Sai Vishnu&nbsp;Kumar</h1>
+      <p class="hero-role">Site Reliability Engineer <span class="at">at</span> F5</p>
+
+      <p class="hero-lede">
+        I run observability for production Kubernetes, at a scale that turns
+        simple things into complicated ones. I am mostly interested in Go and
+        eBPF, and in building the tooling that makes large systems easier to
+        operate. I write about the problems I run into along the way.
+      </p>
+
+      <ul class="hero-links">
+        <li><a href="https://medium.com/@kvs-vishnu23">Articles</a></li>
+        <li><a href="https://github.com/vishnukumarkvs">GitHub</a></li>
+        <li><a href="https://www.linkedin.com/in/vishnu-kvs/">LinkedIn</a></li>
+      </ul>
+    </section>
+
+    <section id="work">
+      <h2 class="label">Work</h2>
+
+      <ol class="entries">
+        <li class="entry">
+          <div class="entry-head">
+            <h3 class="entry-title">SRE II &mdash; Developer, F5 Inc.</h3>
+            <span class="entry-date">2024&ndash;</span>
+          </div>
+          <ul class="points">
+            <li>Run the observability stack behind production Kubernetes environments: metrics, logs and dashboards that teams actually use.</li>
+            <li>Operate high-scale, multi-tenant platforms, and the tooling that keeps them healthy and debuggable.</li>
+            <li>Write internal tools in Go &mdash; CLIs and small web UIs for on-call, capacity work and triage.</li>
+            <li>Contribute Go changes upstream to Coroot, an open-source eBPF observability agent.</li>
+            <li>Share the on-call rotation: alert hygiene, runbooks, and following through after incidents.</li>
+          </ul>
+        </li>
+
+        <li class="entry">
+          <div class="entry-head">
+            <h3 class="entry-title">Cloud Developer, Tata Consultancy Services</h3>
+            <span class="entry-date">2021&ndash;2024</span>
+          </div>
+          <ul class="points">
+            <li>Built and maintained cloud infrastructure with Terraform and the AWS CDK.</li>
+            <li>Automated provisioning and the repetitive platform work that would otherwise be done by hand.</li>
+            <li>Worked across AWS and Azure accounts serving several client environments.</li>
+            <li>Set up CI/CD pipelines, and pushed infrastructure-as-code review practices onto teams that did not have them.</li>
+            <li>Wrote the documentation and runbooks other teams needed to deploy without asking for help.</li>
+          </ul>
+        </li>
+      </ol>
+    </section>
+
+    <section id="projects">
+      <h2 class="label">Projects</h2>
+
+      <div class="entries">
+        <article class="entry" id="project-prom-viewer">
+          <div class="entry-head">
+            <h3 class="entry-title serif">prom-viewer</h3>
+            <span class="entry-date">2026</span>
+          </div>
+          <p class="entry-body">
+            A read-only web UI and CLI for inspecting a running Prometheus
+            instance: TSDB head, WAL, cardinality and recording rules.
+          </p>
+          <p class="entry-meta">
+            <a href="fragments/project-prom-viewer.html"
+               hx-get="fragments/project-prom-viewer.html"
+               hx-target="#more-prom-viewer"
+               hx-swap="innerHTML"
+               hx-select="article.detail"
+               hx-push-url="false">Details</a>
+            <a href="https://github.com/vishnukumarkvs/prom-viewer">Source</a>
+          </p>
+          <div class="entry-more" id="more-prom-viewer"></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="stack">
+      <h2 class="label">Stack</h2>
+
+      <p class="prose-line">
+        Kubernetes, Terraform, Prometheus, Grafana, Loki, Go, Python, Bash,
+        AWS, Azure, Docker, Cilium, GitHub Actions, Linux.
+      </p>
+
+      <ul class="tags">
+        <li>AWS Solutions Architect Associate</li>
+        <li>Azure Solutions Architect Expert</li>
+        <li>DevOps Engineer Expert</li>
+      </ul>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <span>&copy; 2026 Kavali Vignesh Sai Vishnu Kumar</span>
+    <span>Bengaluru, India</span>
+  </footer>
+
+  <script src="assets/htmx.min.js" defer></script>
+  <script src="assets/app.js" defer></script>
+</body>
+</html>

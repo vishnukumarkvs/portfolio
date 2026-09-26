@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: portfolio
+  labels:
+    app.kubernetes.io/name: portfolio
+    app.kubernetes.io/component: web
+    app.kubernetes.io/part-of: portfolio
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: portfolio
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP
+  # Nothing here is long-lived, so give a client that opened a connection
+  # time to finish reading before the pod is pulled out from under it.
+  # sessionAffinity is left as None: any replica can serve any request.
+  internalTrafficPolicy: Cluster
