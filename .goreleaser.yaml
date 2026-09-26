@@ -51,8 +51,10 @@ archives:
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
     files:
       - README.md
+      # The top-level README points at wiki/, so ship it or the link dangles.
+      - wiki/*
       # Uncomment once a LICENSE file exists. It is left out rather than
-      # guessed at; see the Licence section of the README.
+      # guessed at; see wiki/releases.md.
       # - LICENSE
 
 checksum:
