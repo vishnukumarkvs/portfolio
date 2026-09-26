@@ -88,19 +88,28 @@ since the previous tag.
 | `.github/workflows/release.yml` | Runs on a `v*` tag. Publishes the release |
 | `.github/workflows/ci.yml` | Runs on every push and PR. Publishes nothing |
 
-GoReleaser uses the automatic `GITHUB_TOKEN`, scoped to `contents: write` for
-that one job. There is no PAT to configure and no secret to store. The CI
-workflow is read-only.
+GoReleaser uses the automatic `GITHUB_TOKEN`, scoped to `contents: write` and
+`packages: write` for that one job. There is no PAT to configure and no secret
+to store. The CI workflow is read-only.
+
+There are two Dockerfiles, and the split is deliberate:
+
+- `Dockerfile` compiles the binary itself, for `docker build -t portfolio .`
+- `Dockerfile.goreleaser` only copies in the binary GoReleaser already built
+
+GoReleaser has cross-compiled all six targets before it builds an image, so
+compiling again inside the container would be wasted work. It also means CI
+builds both architectures for real rather than trusting one.
 
 Two deliberate choices worth knowing about:
 
 - **No `-version` flag.** The binary has no flags at all, by design. Instead
   `-buildvcs` stamps Go's own build info, so `go version -m ./portfolio` shows
   the commit, tag and dirty state a binary came from.
-- **No published container image.** `k8s/` references
-  `ghcr.io/vishnukumarkvs/portfolio:latest`, but nothing pushes it yet. The
-  Dockerfile is ready; a `docker` block in `.goreleaser.yaml` plus
-  `packages: write` would close that gap.
+- **A multi-arch image, published with the release.** Pushing a `v*` tag
+  publishes `ghcr.io/vishnukumarkvs/portfolio` at that version and at `latest`,
+  as one manifest covering linux/amd64 and linux/arm64, which is what
+  `k8s/deployment.yaml` pulls. A prerelease never takes `latest`.
 
 Both are free for a public repository: GitHub Actions and GitHub Releases have
 no cost, the included monthly minutes do not apply to public repos, and

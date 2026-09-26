@@ -1,0 +1,31 @@
+# Runtime-only image, used by GoReleaser for published releases.
+#
+# The local Dockerfile does the whole thing itself: it compiles the binary in a
+# golang stage and copies the result out. That is the right shape for
+# `docker build -t portfolio .` on a laptop, but GoReleaser has already built
+# and cross-compiled the binaries before it gets here, so compiling a second
+# time inside the image would be wasted work. GoReleaser warns about exactly
+# this.
+#
+# This file therefore only copies the binary GoReleaser built. Everything else
+# — base image, env, exposed port, user, entrypoint — is deliberately identical
+# to the local Dockerfile, so the two paths cannot drift in any way that matters.
+#
+# One image is built for every platform in the dockers_v2 list, so the binary is
+# not at a fixed path. $TARGETPLATFORM is set by buildx and is what selects the
+# right per-platform directory out of the build context.
+FROM gcr.io/distroless/static-debian12:nonroot
+
+ARG TARGETPLATFORM
+
+COPY $TARGETPLATFORM/portfolio /portfolio
+
+ENV ADDR=":8080"
+
+EXPOSE 8080
+
+USER nonroot:nonroot
+
+# No HEALTHCHECK, same reasoning as the local Dockerfile: distroless has no
+# shell and no curl. Kubernetes probes /healthz over HTTP instead.
+ENTRYPOINT ["/portfolio"]

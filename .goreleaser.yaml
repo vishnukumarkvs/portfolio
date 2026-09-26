@@ -58,6 +58,37 @@ archives:
 checksum:
   name_template: "checksums.txt"
 
+# Container image for the Kubernetes manifests. GoReleaser has already built and
+# cross-compiled the linux binaries by this point, so the image build only wraps
+# one of them; Dockerfile.goreleaser copies it in rather than recompiling.
+#
+# Both architectures go into a single multi-arch manifest, so a node of either
+# kind pulls `:latest` and gets the right one without the manifest caring.
+dockers_v2:
+  - id: portfolio
+    ids:
+      - portfolio
+    dockerfile: Dockerfile.goreleaser
+    platforms:
+      - linux/amd64
+      - linux/arm64
+    # dockers_v2 splits these in two: `images` is the untagged repository,
+    # `tags` are the tag names applied to it.
+    images:
+      # ghcr requires an explicit owner and a lowercase repository path.
+      - "ghcr.io/{{ .Env.GITHUB_REPOSITORY_OWNER }}/portfolio"
+    tags:
+      - "{{ .Version }}"
+      # A prerelease must never claim the floating tag, or `latest` would point
+      # at an rc that k8s could pull by accident.
+      - "{{ if not .IsSnapshot }}latest{{ end }}"
+    labels:
+      org.opencontainers.image.title: portfolio
+      org.opencontainers.image.description: Static site server, single binary.
+      org.opencontainers.image.source: "https://github.com/{{ .GitURL }}"
+      org.opencontainers.image.revision: "{{ .FullCommit }}"
+      org.opencontainers.image.created: "{{ .Date }}"
+
 # One release per tag, published immediately and marked as the latest.
 release:
   prerelease: auto

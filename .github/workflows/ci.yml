@@ -36,4 +36,11 @@ jobs:
           distribution: goreleaser
           # --snapshot builds every platform and writes the archives and
           # checksums to dist/ without creating a GitHub Release.
-          args: release --snapshot --clean
+          #
+          # --skip=docker because the image is the one thing CI cannot check
+          # cheaply: dockers_v2 drives buildx, and a snapshot build of both
+          # platforms needs a multi-platform builder plus a way to load an
+          # arm64 image onto an amd64 runner. That is what the release job and
+          # its buildx setup are for. This still catches a broken .goreleaser.yaml,
+          # a bad Dockerfile.goreleaser path, and any build or archive regression.
+          args: release --snapshot --clean --skip=docker
