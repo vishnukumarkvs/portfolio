@@ -36,8 +36,15 @@
         <a href="#projects">Projects</a>
         <a href="#stack">Stack</a>
         <button class="theme-toggle" type="button" aria-label="Switch colour theme">
-          <span class="on-dark" aria-hidden="true">Dark</span>
-          <span class="on-light" aria-hidden="true">Light</span>
+          <span class="on-dark" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
+          </span>
+          <span class="on-light" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="4.2"/>
+              <path d="M12 2.2v2.4M12 19.4v2.4M4.5 4.5l1.7 1.7M17.8 17.8l1.7 1.7M2.2 12h2.4M19.4 12h2.4M4.5 19.5l1.7 -1.7M17.8 6.2l1.7 -1.7"/>
+            </svg>
+          </span>
         </button>
       </nav>
     </div>
@@ -53,7 +60,8 @@
         I run observability for production Kubernetes, at a scale that turns
         simple things into complicated ones. I am mostly interested in Go and
         eBPF, and in building the tooling that makes large systems easier to
-        operate. I write about the problems I run into along the way.
+        operate. I love open source and I contribute to the projects I depend 
+        on. I also write about the engineering challenges I encounter along the way.
       </p>
 
       <ul class="hero-links">
@@ -75,6 +83,7 @@
           <ul class="points">
             <li>Run the observability stack behind production Kubernetes environments: metrics, logs and dashboards that teams actually use.</li>
             <li>Operate high-scale, multi-tenant platforms, and the tooling that keeps them healthy and debuggable.</li>
+            <li>Improve stack performance and efficiency by analyzing component behavior, profiling resource usage, and fine-tuning configurations.</li>
             <li>Write internal tools in Go &mdash; CLIs and small web UIs for on-call, capacity work and triage.</li>
             <li>Contribute Go changes upstream to Coroot, an open-source eBPF observability agent.</li>
             <li>Share the on-call rotation: alert hygiene, runbooks, and following through after incidents.</li>
@@ -128,8 +137,8 @@
       <h2 class="label">Stack</h2>
 
       <p class="prose-line">
-        Kubernetes, Terraform, Prometheus, Grafana, Loki, Go, Python, Bash,
-        AWS, Azure, Docker, Cilium, GitHub Actions, Linux.
+        Opencode, Kubernetes, Linux, Terraform, Prometheus, Grafana, Loki, Go, Python,
+        AWS, Azure, Docker.
       </p>
 
       <ul class="tags">

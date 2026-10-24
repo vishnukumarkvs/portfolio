@@ -18,8 +18,21 @@ weight, so `strong`, `.label` and titles all come from the same download.
 ## Colour
 
 Light and dark are the same layout with a different set of custom properties on
-`[data-theme]`. Every colour is a custom property at the top of
-`assets/style.css`; nothing below that section hard-codes a colour value.
+`[data-theme]`. The paper is white in light and deep green-black in dark, and
+colour does structural work on top of it, all flat — no gradients:
+
+- **Violet** is the identity: the topbar name, the hero name, page titles.
+- Each section owns one hue: **cobalt** for Work, **magenta** for Projects,
+  **teal** for Stack — the same colour on the section label and its entry
+  titles, so scanning tells you where you are.
+- **Jade** is reserved for interaction: link hover and the focus ring.
+- Body copy stays ink on white; colour speaks only where structure speaks.
+
+In dark the four hues become lighter tints of themselves against the
+green-black. Every colour is a custom property at the top of
+`assets/style.css`; nothing below that section hard-codes a colour value. The
+print stylesheet is the exception — it stays black on white, because paper is
+paper.
 
 The theme is applied by an inline script in `<head>` before first paint, so
 the page never flashes the wrong theme. That inline script is the only reason
@@ -68,7 +81,9 @@ in.
 
 ## Accessibility notes
 
-- The theme toggle is a real `<button>` with an `aria-label`.
+- The theme toggle is a real `<button>` with an `aria-label` — it is a
+  sun/moon icon inline SVG, nothing asked from the network, so the label is
+  the accessible name doing real work.
 - `prefers-color-scheme` is respected when no explicit choice is stored.
 - Semantic landmarks throughout: one `<main>`, `<nav>`, `<footer>`.
 - Anchor links work without JavaScript and the print stylesheet keeps them

@@ -1,9 +1,9 @@
 /* ==========================================================================
    portfolio
 
-   One column, white paper, hairline rules. Figtree everywhere — the type
-   hierarchy comes from size and weight, not from a second typeface. No
-   cards, no shadows, no gradients, no background colour anywhere.
+   One column, white paper, hairline rules. Figtree everywhere, and colour
+   carries the structure: violet for the name, one hue per section (cobalt,
+   magenta, teal), jade for interaction. No cards, no shadows, no gradients.
    ========================================================================== */
 
 @font-face {
@@ -23,7 +23,16 @@
   --ink-faint: #86868f;
   --rule: #e7e7e4;
   --rule-strong: #d6d6d2;
-  --accent: #2f4fd0;
+  --accent: #0e6b52;
+
+  /* Colour carries structure. One vivid hue per voice, all flat, none
+     gradiented: violet is the identity (names and titles), and the three
+     sections each own one colour for its label and entry titles. Jade is
+     reserved for interaction. */
+  --c-violet: #5b21b6;
+  --c-cobalt: #2451d6;
+  --c-magenta: #c21f74;
+  --c-teal: #0e7490;
 
   --display: "Figtree", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
   --sans: "Figtree", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
@@ -41,13 +50,20 @@
 [data-theme="dark"] {
   color-scheme: dark;
 
-  --paper: #121212;
-  --ink: #eceae6;
-  --ink-soft: #a8a6a1;
-  --ink-faint: #74726d;
-  --rule: #2a2a28;
-  --rule-strong: #3a3a37;
-  --accent: #8fa6f5;
+  --paper: #131711;
+  --ink: #efe9d2;
+  --ink-soft: #b0aa92;
+  --ink-faint: #7b7663;
+  --rule: #262a20;
+  --rule-strong: #363b2c;
+  --accent: #5ecb8c;
+
+  /* Lighter tints of the same four hues — vibrant against the green-black
+     paper instead of against butter. */
+  --c-violet: #c4b5fd;
+  --c-cobalt: #93c5fd;
+  --c-magenta: #f472b6;
+  --c-teal: #5eead4;
 }
 
 *,
@@ -131,7 +147,7 @@ code, kbd { font-family: var(--mono); font-size: 0.87em; }
   font-weight: 600;
   letter-spacing: -0.005em;
   text-decoration: none;
-  color: var(--ink);
+  color: var(--c-violet);
   white-space: nowrap;
 }
 
@@ -153,13 +169,25 @@ code, kbd { font-family: var(--mono); font-size: 0.87em; }
 
 .theme-toggle {
   font: inherit;
-  font-size: 0.86rem;
   color: var(--ink-faint);
   background: none;
   border: 0;
   padding: 0;
   cursor: pointer;
-  line-height: 1;
+  line-height: 0;
+}
+
+/* The sun and moon are inline SVGs: no icon font, no external request.
+   size, not colour — stroke inherits from the button. */
+.theme-toggle svg {
+  display: block;
+  width: 1.05rem;
+  height: 1.05rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .theme-toggle:hover { color: var(--ink); }
@@ -181,7 +209,9 @@ section {
 
 section + section { border-top: 1px solid var(--rule); margin-top: 3rem; }
 
-/* The small uppercase label that opens each section. */
+/* The small uppercase label that opens each section. Each section owns one
+   hue — the same colour returns on its entry titles — while the identity
+   (violet) and the interaction (jade) stay the same everywhere. */
 .label {
   font-family: var(--sans);
   font-size: 0.7rem;
@@ -192,6 +222,10 @@ section + section { border-top: 1px solid var(--rule); margin-top: 3rem; }
   margin: 0 0 1.6rem;
 }
 
+#work .label { color: var(--c-cobalt); }
+#projects .label { color: var(--c-magenta); }
+#stack .label { color: var(--c-teal); }
+
 /* --------------------------------------------------------------------- hero */
 
 .hero { padding-top: 4.5rem; }
@@ -201,6 +235,7 @@ section + section { border-top: 1px solid var(--rule); margin-top: 3rem; }
   font-size: clamp(2.4rem, 7vw, 3.5rem);
   line-height: 1.08;
   letter-spacing: -0.02em;
+  color: var(--c-violet);
   margin: 0 0 0.6rem;
   text-wrap: balance;
 }
@@ -250,11 +285,12 @@ section + section { border-top: 1px solid var(--rule); margin-top: 3rem; }
 
 .entry-title {
   font-size: 1.02rem;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: -0.005em;
+  color: var(--c-cobalt);
 }
 
-.entry-title a { text-decoration: none; }
+.entry-title a { text-decoration: none; color: inherit; }
 
 .entry-date {
   font-family: var(--mono);
@@ -272,12 +308,13 @@ section + section { border-top: 1px solid var(--rule); margin-top: 3rem; }
   max-width: var(--read);
 }
 
-/* Project names get the display style so the list reads as a set of titles. */
+/* Project names take their section colour so the list reads as a set of titles. */
 .entry-title.serif {
   font-family: var(--display);
   font-size: 1.2rem;
   font-weight: 600;
   letter-spacing: -0.005em;
+  color: var(--c-magenta);
 }
 
 .entry-meta {
@@ -391,6 +428,7 @@ section + section { border-top: 1px solid var(--rule); margin-top: 3rem; }
   font-size: clamp(2rem, 6vw, 2.75rem);
   line-height: 1.14;
   letter-spacing: -0.015em;
+  color: var(--c-violet);
   margin: 0 0 0.35rem;
 }
 
@@ -481,6 +519,7 @@ section + section { border-top: 1px solid var(--rule); margin-top: 3rem; }
      still prints, so only the Close control itself is dropped. */
   .topbar, .back, .entry-more, [data-close-project] { display: none; }
   body { background: #fff; color: #000; font-size: 11pt; }
+  h1, h2, h3 { color: #000; }
   section { padding-top: 1.25rem; break-inside: avoid; }
   section + section { margin-top: 1.25rem; }
   .entry { padding: 0.6rem 0; break-inside: avoid; }

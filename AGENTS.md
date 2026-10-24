@@ -35,7 +35,11 @@ These are design decisions, not oversights. Do not "fix" them.
 - **No test suite.** The user asked for none. Verify with `go vet ./...`,
   `go build ./...`, and the manual checks in
   [wiki/development.md](wiki/development.md#verifying-a-change).
-- **No gradients, no cards, no shadows, white paper background.**
+- **No gradients, no cards, no shadows, white paper.** White paper in light,
+  deep green-black in dark, and vivid flat colour on top: violet for identity,
+  cobalt/magenta/teal owned by the Work/Projects/Stack sections, jade reserved
+  for interaction. All colour is flat and tokenised; never hard-code a hex
+  outside the two token blocks in `assets/style.css`.
 
 ## Before you finish
 
