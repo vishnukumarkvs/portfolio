@@ -4,15 +4,16 @@ One column, white paper, hairline rules. No cards, no shadows, no gradients.
 
 ## Type
 
-Two typefaces, both self-hosted as woff2 subsets in `assets/fonts/`:
-
-- **Instrument Serif** for names and titles — the editorial voice
-- **Instrument Sans** for everything else
+One typeface, **Figtree** — a friendly geometric sans, self-hosted as a
+variable woff2 subset (weights 300–900) in `assets/fonts/`. The hierarchy
+comes from size and weight alone: 600 for names and titles, 400 for body.
+The serif era is gone; there is no second typeface to manage.
 
 Self-hosting avoids a Google Fonts request and a third-party origin, which
 means the CSP does not need loosening and there is no external dependency at
-runtime. The woff2 files are loaded with `font-display: swap` and preloaded for
-the two faces used above the fold.
+runtime. The woff2 file is loaded with `font-display: swap` and preloaded,
+being the only face used above the fold. One variable file serves every
+weight, so `strong`, `.label` and titles all come from the same download.
 
 ## Colour
 
@@ -46,9 +47,9 @@ page width.
 
 ## Weight
 
-The page is about 6 KB of HTML. With the stylesheet, the vendored htmx and the
-two fonts, roughly 25 KB over the wire gzipped. There is no image on the page
-at all.
+The page is about 6 KB of HTML. With the stylesheet, the vendored htmx and
+one variable font, roughly 25 KB over the wire gzipped. There is no image on
+the page at all.
 
 ## Printing
 

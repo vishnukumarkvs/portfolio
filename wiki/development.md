@@ -46,7 +46,7 @@ assets/
   app.js                      theme toggle, project collapse
   htmx.min.js                 vendored, v2.0.4
   favicon.svg
-  fonts/                      Instrument Serif + Instrument Sans, woff2 subsets
+  fonts/                      Figtree, variable woff2 subset (300–900)
 fragments/
   project-prom-viewer.html    long-form page for the one featured project
 main.go                       startup, env config, graceful shutdown
